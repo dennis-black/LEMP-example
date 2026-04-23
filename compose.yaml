@@ -1,0 +1,41 @@
+services:
+  # Web Server: Nginx
+  nginx:
+    image: nginx:latest
+    ports:
+      - "${PORT}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  # Code Processor
+  app:
+    build: ./app
+    volumes:
+      - ./${PROJECT_DIR_NAME}:/var/www/html
+
+  # Database: MariaDB
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=crisperBox
+    volumes:
+      - database_data:/var/lib/mysql
+      - ./${PROJECT_DIR_NAME}/${SQL_FILE_NAME}:/docker-entrypoint-initdb.d/${SQL_FILE_NAME}
+  
+  # Database Management: phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_ABSOLUTE_URI=http://localhost:${PORT}/phpmyadmin/
+      - UPLOAD_LIMIT=120M
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+
+volumes:
+  database_data:
