@@ -21,7 +21,7 @@ services:
     restart: always
     environment:
       - MARIADB_ROOT_PASSWORD=root
-      - MARIADB_DATABASE=crisperBox
+      - MARIADB_DATABASE=${DATABASE_NAME}
     volumes:
       - database_data:/var/lib/mysql
       - ./${PROJECT_DIR_NAME}/${SQL_FILE_NAME}:/docker-entrypoint-initdb.d/${SQL_FILE_NAME}
